@@ -1,0 +1,53 @@
+<!-- static/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Example</title>
+    <style>
+        #plot-canvas {
+            background-image: url('https://www.lib.okayama-u.ac.jp/up_load_files/centrallibmap/central_1floor.jpg');
+            background-size: cover;
+            background-position: center;
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <h1>Random Coordinates</h1>
+    <canvas id="plot-canvas" width="1004" height="565"></canvas>
+    <script>
+        const ws = new WebSocket('ws://localhost:6790');
+	const canvas = document.getElementById('plot-canvas');
+        const ctx = canvas.getContext('2d');
+
+        ws.onopen = () => {
+            console.log("WebSocket connection established");
+        };
+
+        ws.onmessage = (event) => {
+            console.log("Received message: " + event.data);  // Logs of received data
+            const coordinates = JSON.parse(event.data);
+
+            // Clear Plot
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Plot random coordinate
+            const x = coordinates.x;
+            const y = coordinates.y;
+            ctx.fillStyle = 'red';
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, 2 * Math.PI);
+            ctx.fill();
+        };
+
+        ws.onerror = (error) => {
+            console.log("WebSocket error: " + error);
+        };
+
+        ws.onclose = () => {
+            console.log("WebSocket connection closed");
+        };
+    </script>
+</body>
+</html>
+
